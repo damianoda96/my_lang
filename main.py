@@ -131,6 +131,20 @@ def assign(current_line):
 
 # ------------------------- CALCULATION ---------------------------------
 
+def do_op(a, operation, b):
+	if operation == "+":
+		# print(a + b)
+		return a + b
+	elif operation == "-":
+		# print(a - b)
+		return a - b
+	elif operation == "*":
+		# print(a * b)
+		return a * b
+	elif operation == "/":
+		# print(a / b)
+		return a / b
+
 def calculate(current_line):
 
 	# TODO: ALLOW FOR EXPRESSIONS LIKE a + 1 (var + literal)
@@ -140,42 +154,56 @@ def calculate(current_line):
 	operation = current_line[2]
 	rhs = get_var(current_line[3])
 
-	if not lhs:
-		print("woah!")
-	if not rhs:
-		print("wowee!")
+	# HERE IS OUR ISSUE HUNKS, HOW DO WE HANDLE INPUT THAT IS NOT A VARIABLE EFFICIENTLY????
 
-	assert(lhs.type == rhs.type)
+	if not lhs and not rhs:
 
-	if lhs.type == "int":
-		a = int(lhs.content)
-		b = int(rhs.content)
+		a = int(current_line[1])
+		b = int(current_line[3])
+		operation = current_line[2]
 
-		if operation == "+":
-			# print(a + b)
-			return a + b
-		elif operation == "-":
-			# print(a - b)
-			return a - b
-		elif operation == "*":
-			# print(a * b)
-			return a * b
-		elif operation == "/":
-			# print(a / b)
-			return a / b
-	elif lhs.type == "bool":
-		a = lhs.content
-		b = rhs.content
+		return do_op(a, operation, b)
 
-		if operation == "and":
-			# print(a and b)
-			return a and b
-		elif operation == "or":
-			# print(a or b)
-			return a or b
-	elif lhs.type == "str":
-		a = lhs.content
-		b = rhs.content
+	if lhs and not rhs:
+
+		if lhs.type == "int":
+			a = int(lhs.content)
+			b = int(current_line[3])
+
+			return do_op(a, operation, b)
+
+	if rhs and not lhs:
+
+		if rhs.type == "int":
+			a = int(current_line[1])
+			b = int(rhs.content)
+
+			return do_op(a, operation, b)
+
+	if lhs and rhs:
+
+		assert(lhs.type == rhs.type)
+
+		if lhs.type == "int":
+			a = int(lhs.content)
+			b = int(rhs.content)
+
+			return do_op(a, operation, b)
+
+		elif lhs.type == "bool":
+			a = lhs.content
+			b = rhs.content
+
+			if operation == "and":
+				# print(a and b)
+				return a and b
+			elif operation == "or":
+				# print(a or b)
+				return a or b
+
+		elif lhs.type == "str":
+			a = lhs.content
+			b = rhs.content
 
 def make_object(line):
 	pass
@@ -354,6 +382,9 @@ con_color = color()
 line_counter = 0
 
 if len(sys.argv) > 1:
+
+	# LETS PARSE A FILE YOU HUNKS.. JUST FEED THE PARSER LINE BY LINE AND WATCH THE MAGIC HAPPEN...
+
 	print(str(sys.argv))
 
 while True:
